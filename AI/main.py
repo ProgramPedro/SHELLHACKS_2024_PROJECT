@@ -29,7 +29,7 @@ query = 'python tutorials' #replace with input topic
 results = search_videos(query)
 videos = []
 for i in range(len(results["items"])):
-    videos.append(f"https://www.youtube.com/watch?v={results['items'][i]['id']['videoId']}")
+    videos.append((f"https://www.youtube.com/watch?v={results['items'][i]['id']['videoId']}", results["items"][i]['snippet']['title']))
 
 
 output = completion.choices[0].message.content.split("spc")
@@ -38,7 +38,7 @@ print(completion.choices[0].message.content)
 
 with open("SHELLHACKS_2024_PROJECT\output.json", "r+") as file:
     data = json.load(file)
-    data['Response']['Explanation'] = f"{output[0]}(Extra Resources): {videos}\n\n"
+    data['Response']['Explanation'] = f"{output[0]}(Extra Resources): {videos[0][0]} ({videos[0][-1]})\n{videos[1][0]} ({videos[1][-1]})\n{videos[-1][0]} ({videos[-1][-1]})\n\n"
     data['Response']['Question'] = output[1]
     data['Response']['Answer'] = output[-1]
     file.seek(0)
