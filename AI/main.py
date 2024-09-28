@@ -8,16 +8,21 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-completion = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[
-        {"role": "system", "content": "You are a professor who is aiding students in their desired topics in order for them to better understand it please refer to the institution and course they provided. After an explanation work out a practice problem and make the answer of the problem a choice in a 4 option multiple choice for that practice problem. The explanation, multiple choice question, and the answer explanation should be seperated by 'spc' and all '\' should be replaced by '$' for easier formatting."},
-        {
-            "role": "user",
-            "content": "Institution: Florida International Univeristy | Course: MAC2311 | Topic: Equation of tangent line using limit definition of derivative"
-        } #replace institution, course, topic with input corresponding
-    ]
-)
+with open("SHELLHACKS_2024_PROJECT\input.json", "r+") as input:
+    data = json.load(input)
+    school = data["School"]
+    course = data["Course"]
+    topic = data['Topic']
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "You are a professor who is aiding students in their desired topics in order for them to better understand it please refer to the institution and course they provided. After an explanation work out a practice problem and make the answer of the problem a choice in a 4 option multiple choice for that practice problem. The explanation, multiple choice question, and the answer explanation should be seperated by 'spc' and all '\' should be replaced by '$' for easier formatting."},
+            {
+                "role": "user",
+                "content": f"Institution: {school} | Course: {course} | Topic: {topic}"
+            } 
+        ]
+    )
 
 def search_videos(query):
     youtube = build('youtube', 'v3', developerKey=os.getenv("GOOGLE_API_KEY"))
@@ -25,8 +30,7 @@ def search_videos(query):
     response = request.execute()
     return response
 
-query = 'python tutorials' #replace with input topic
-results = search_videos(query)
+results = search_videos(topic)
 videos = []
 for i in range(len(results["items"])):
     videos.append((f"https://www.youtube.com/watch?v={results['items'][i]['id']['videoId']}", results["items"][i]['snippet']['title']))
