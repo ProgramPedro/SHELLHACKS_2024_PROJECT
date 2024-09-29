@@ -6,11 +6,11 @@ from googleapiclient.discovery import build
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-with open("src/SHELLHACKS_2024_PROJECT/input.json", "r+") as input:
+with open("src/SHELLHACKS_2024_PROJECT/data.json", "r+") as input:
     data = json.load(input)
-    school = data["School"]
-    course = data["Course"]
-    topic = data['Topic']
+    school = data["school"]
+    course = data["course"]
+    topic = data["topic"]
 
 def search_videos(query):
     youtube = build('youtube', 'v3', developerKey=os.getenv("GOOGLE_API_KEY"))

@@ -11,6 +11,11 @@ with open("src/SHELLHACKS_2024_PROJECT/input.json", "r+") as input:
     school = data["School"]
     course = data["Course"]
     topic = data['Topic']
+    with open("src/SHELLHACKS_2024_PROJECT/data.json", "r+") as cfile:
+        data = json.load(cfile)
+        data["school"] = school
+        data["course"] = course
+        data["topic"] = topic
 
 def search_videos(query):
     youtube = build('youtube', 'v3', developerKey=os.getenv("GOOGLE_API_KEY"))
