@@ -43,8 +43,13 @@ def followup_ai():
         )
         output = completion.choices[0].message.content
 
-    with open("src/SHELLHACKS_2024_PROJECT/output.json", "r+") as file:
+    with open("src/SHELLHACKS_2024_PROJECT/followup.json", "r+") as file:
         data = json.load(file)
-        data['Response']['Output'] = output
+        data["Output"] = output
+
+        file.seek(0)
+        file.truncate(0)
+        file.write(json.dumps(data))
+
 
 followup_ai()
