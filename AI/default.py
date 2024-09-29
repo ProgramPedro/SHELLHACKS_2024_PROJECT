@@ -58,23 +58,4 @@ def default_ai():
         file.write(json.dumps(data))
     return output[0]
 
-def followup_ai():
-    with open("SHELLHACKS_2024_PROJECT\input.json", "r+") as input:
-        data = json.load(input)
-        input = data["Input"]
-        completion = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a professor who is aiding students in their desired topics in order for them to better understand it. You are here to help them interpret your past responses to their questions and follow up on any more questions they have make sure that all '\' in your response should be replaced by '$' for easier formatting."},
-                {
-                    "role": "user",
-                    "content": f"You responded with {default_ai()}, they are asking now '{input}'"
-                } 
-            ]
-        )
-        output = completion.choices[0].message.content
-
-        with open("SHELLHACKS_2024_PROJECT\output.json", "r+") as file:
-            data = json.load(file)
-            data["output"] = output
-    return output
+default_ai()
