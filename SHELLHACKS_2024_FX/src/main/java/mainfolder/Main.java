@@ -1,39 +1,29 @@
 package mainfolder;
 
 import javafx.embed.swing.SwingFXUtils;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.image.Image;
+import javafx.application.Application;
+import javafx.scene.image.ImageView;
 
-import java.awt.Color;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.scilab.forge.jlatexmath.TeXConstants;
 import org.scilab.forge.jlatexmath.TeXFormula;
 import org.scilab.forge.jlatexmath.TeXIcon;
-import javafx.scene.image.ImageView;
 
-
-import javax.imageio.ImageIO;
 import java.awt.*;
-
-
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+
 import java.io.FileReader;
 import java.io.IOException;
 
 public class Main extends Application {
-    //Make label for explanation, question, and answer
-    //private static Label explanationLabel = new Label();
-    //private static Label questionLabel = new Label();
-    //private static Label answerLabel = new Label();
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -44,23 +34,23 @@ public class Main extends Application {
         VBox vbox = new VBox();
         vbox.setSpacing(10);
         try (FileReader reader = new FileReader(aiOutputFile)) {
-            //Parse JSON into an object
+            //Parse JSON file into a Json Object
             JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
 
-            //Enter the Response object to extract explanation, question, and answer keys
+            //Create a JsonObject of the response thorugh the Response key found in the Json AI Output File
             JsonObject response = jsonObject.getAsJsonObject("Response");
 
-            //Extract values with keys
+            //Extract values from "response" through keys from the Json file
             String explanation = response.get("Explanation").getAsString();
             String question = response.get("Question").getAsString();
             String answer = response.get("Answer").getAsString();
 
-            //Split values extracted into tokens
+            //Split values extracted into tokens separated by two dollars signs
+            //$$ is a delimeter in LaTeX (typesetting system used to create mathematical expressions, equations, etc.)
             String[] explanationBig = explanation.split("\\$\\$");//makes explanation tokens
             String[] questionBig = question.split("\\$\\$");
             String[] answerBig = answer.split("\\$\\$");
-
-
+            
             //Iterate through tokens to see what is a math formula or not
             //Convert to math image, then add to vbox
             //If not formula, add normal text to vbox
@@ -70,7 +60,7 @@ public class Main extends Application {
                     ImageView mathImage = printImage(explanationToken);
                     vbox.getChildren().add(mathImage);
                 } else {
-                    explanationToken = explanationToken.replace("$", "");
+                    explanationToken = explanationToken.replace("$", ""); //Remove single dollar signs for simple math equations
                     Text normalText = new Text(explanationToken);
                     vbox.getChildren().add(normalText);
                 }
@@ -88,7 +78,7 @@ public class Main extends Application {
                     Text normalText = new Text(questionToken);
                     vbox.getChildren().add(normalText);
                 }
-                j++;//Iterate i to the next
+                j++;//Iterate j to the next
             }
 
             int e = 0;
@@ -102,30 +92,23 @@ public class Main extends Application {
                     Text normalText = new Text(answerToken);
                     vbox.getChildren().add(normalText);
                 }
-                e++;//Iterate i to the next
+                e++;//Iterate e to the next
             }
-
-            //WITHOUT FORMATTING
-            System.out.println(explanation);
-            System.out.println(question);
-            System.out.println(answer);
 
         } catch (IOException e){
             System.out.println(e);
         }
-
-        //Layout
-        StackPane pane = new StackPane();
 
         //Set the scrollbar
         ScrollPane scroll = new ScrollPane();
         scroll.setPrefSize(500, 500);
         scroll.setContent(vbox);
 
-
+        //Add scroll pane to scene and set the stage
         Scene scene = new Scene(scroll, 600, 400);
-        stage.setTitle("uHackEDU: RESPONSE");
+        stage.setTitle("uHackEDU");
         stage.setScene(scene);
+        //Display the window
         stage.show();
     }
 
@@ -133,27 +116,22 @@ public class Main extends Application {
         launch();
     }//end of main method
 
-
     public static ImageView printImage(String mathExpression) {
-        System.out.println("MATH EXPRESSION BEING MADE");
         TeXFormula formula = new TeXFormula(mathExpression);//Convert mathexpression into LaTeX Formula
         TeXIcon formulaIcon = formula.createTeXIcon(TeXConstants.STYLE_DISPLAY, 20); //Create icon for conversion into buffered image
-        System.out.println("MATH EXPRESSION MADE");
 
-        //Convert formula (BufferedImage -> FX Image)
-        // mathImage = new ImageView(convertToFXImage());
+        //Convert formula into a buffered image (BufferedImage -> FX Image)
         BufferedImage bufferedImage = new BufferedImage(formulaIcon.getIconWidth(), formulaIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+
         Graphics2D iconGraphics = bufferedImage.createGraphics();
         iconGraphics.setColor(Color.WHITE);
         iconGraphics.fillRect(0,0, bufferedImage.getWidth(), bufferedImage.getHeight());
         formulaIcon.paintIcon(null, iconGraphics, 0, 0);
         iconGraphics.dispose();//Toss out graphics context
-        System.out.println("CREATED BUFFERED IMAGE");
 
         Image FXImage = SwingFXUtils.toFXImage(bufferedImage, null);
-        ImageView imageView = new ImageView(FXImage);
-        System.out.println("IMAGE VIEW MADE");
-        return imageView;
-    }
+
+        return new ImageView(FXImage); //return the FXImage of the LaTeX formula to place in the VBox
+    }//end of printImage method
 
 }//end of Main
