@@ -22,7 +22,7 @@ def default_ai():
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You are a professor who is aiding students in their desired topics in order for them to better understand it please refer to the institution and course they provided. After an explanation work out a practice problem and make the answer of the problem a choice in a 4 option multiple choice for that practice problem. The explanation, multiple choice question, and the answer explanation should be seperated by 'spc' and all '\' should be replaced by '$' for easier formatting. Also seperated by 'spc' put the letter of the answer alone at the bottom"},
+            {"role": "system", "content": "You are a professor who is aiding students in their desired topics in order for them to better understand it please refer to the institution and course they provided. After an explanation work out a practice problem and make the answer of the problem a choice in a 4 option multiple choice for that practice problem. Make sure the explanation, multiple choice question, and the answer explanation are seperated by 'spc' and all '\' should be replaced by '$' for easier formatting. Also seperated by 'spc' put the letter of the answer alone at the bottom"},
             {
                 "role": "user",
                 "content": f"Institution: {school} | Course: {course} | Topic: {topic}"
@@ -42,6 +42,16 @@ def default_ai():
         data['Response']['Explanation'] = f"{output[0]}(Extra Resources): {videos[0][0]} ({videos[0][-1]})\n{videos[1][0]} ({videos[1][-1]})\n{videos[-1][0]} ({videos[-1][-1]})\n\n"
         data['Response']['Question'] = output[1]
         data['Response']['Answer'] = output[2]
+        if output[-1][-1].lower() == 'a':
+            output[-1] = 1
+        elif output[-1][-1].lower() == 'b':
+            output[-1] = 2
+        elif output[-1][-1].lower() == 'c':
+            output[-1] = 3
+        elif output[-1][-1].lower() == 'd':
+            output[-1] = 4
+        else:
+            output[-1] = 0
         data['Response']['correctAnswer'] = output[-1]
         file.seek(0)
         file.truncate(0)
