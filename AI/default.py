@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-with open("SHELLHACKS_2024_PROJECT\input.json", "r+") as input:
+with open("src/SHELLHACKS_2024_PROJECT/input.json", "r+") as input:
     data = json.load(input)
     school = data["School"]
     course = data["Course"]
@@ -37,7 +37,7 @@ def default_ai():
         videos.append((f"https://www.youtube.com/watch?v={results['items'][i]['id']['videoId']}", results["items"][i]['snippet']['title']))
 
 
-    with open("SHELLHACKS_2024_PROJECT\output.json", "r+") as file:
+    with open("src/SHELLHACKS_2024_PROJECT/output.json", "r+") as file:
         data = json.load(file)
         data['Response']['Explanation'] = f"{output[0]}(Extra Resources): {videos[0][0]} ({videos[0][-1]})\n{videos[1][0]} ({videos[1][-1]})\n{videos[-1][0]} ({videos[-1][-1]})\n\n"
         data['Response']['Question'] = output[1]
