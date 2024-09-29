@@ -11,7 +11,7 @@ with open("src/SHELLHACKS_2024_PROJECT/data.json", "r+") as input:
     school = data["school"]
     course = data["course"]
     topic = data["topic"]
-    
+
 def default_ai():
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -43,9 +43,8 @@ def followup_ai():
         )
         output = completion.choices[0].message.content
 
-        with open("src/SHELLHACKS_2024_PROJECT/output.json", "r+") as file:
-            data = json.load(file)
-            data['Response']['output'] = output
-    return output
+    with open("src/SHELLHACKS_2024_PROJECT/output.json", "r+") as file:
+        data = json.load(file)
+        data['Response']['Output'] = output
 
 followup_ai()
