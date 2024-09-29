@@ -59,7 +59,7 @@ def default_ai():
     return output[0]
 
 def followup_ai():
-    with open("SHELLHACKS_2024_PROJECT\input.json", "r+") as input:
+    with open("src/SHELLHACKS_2024_PROJECT/input.json", "r+") as input:
         data = json.load(input)
         input = data["Input"]
         completion = client.chat.completions.create(
@@ -74,7 +74,7 @@ def followup_ai():
         )
         output = completion.choices[0].message.content
 
-        with open("SHELLHACKS_2024_PROJECT\output.json", "r+") as file:
+        with open("src/SHELLHACKS_2024_PROJECT/output.json", "r+") as file:
             data = json.load(file)
             data["output"] = output
     return output
