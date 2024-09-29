@@ -11,13 +11,7 @@ with open("src/SHELLHACKS_2024_PROJECT/data.json", "r+") as input:
     school = data["school"]
     course = data["course"]
     topic = data["topic"]
-
-def search_videos(query):
-    youtube = build('youtube', 'v3', developerKey=os.getenv("GOOGLE_API_KEY"))
-    request = youtube.search().list(part='snippet', type='video', q=query, maxResults=3)
-    response = request.execute()
-    return response
-
+    
 def default_ai():
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -31,31 +25,6 @@ def default_ai():
     )
     output = completion.choices[0].message.content.split("spc")
 
-    results = search_videos(topic)
-    videos = []
-    for i in range(len(results["items"])):
-        videos.append((f"https://www.youtube.com/watch?v={results['items'][i]['id']['videoId']}", results["items"][i]['snippet']['title']))
-
-
-    with open("src/SHELLHACKS_2024_PROJECT/output.json", "r+") as file:
-        data = json.load(file)
-        data['Response']['Explanation'] = f"{output[0]}(Extra Resources): {videos[0][0]} ({videos[0][-1]})\n{videos[1][0]} ({videos[1][-1]})\n{videos[-1][0]} ({videos[-1][-1]})\n\n"
-        data['Response']['Question'] = output[1]
-        data['Response']['Answer'] = output[2]
-        if output[-1][-1].lower() == 'a':
-            output[-1] = 1
-        elif output[-1][-1].lower() == 'b':
-            output[-1] = 2
-        elif output[-1][-1].lower() == 'c':
-            output[-1] = 3
-        elif output[-1][-1].lower() == 'd':
-            output[-1] = 4
-        else:
-            output[-1] = 0
-        data['Response']['correctAnswer'] = output[-1]
-        file.seek(0)
-        file.truncate(0)
-        file.write(json.dumps(data))
     return output[0]
 
 def followup_ai():
@@ -68,7 +37,7 @@ def followup_ai():
                 {"role": "system", "content": "You are a professor who is aiding students in their desired topics in order for them to better understand it. You are here to help them interpret your past responses to their questions and follow up on any more questions they have make sure that all '\' in your response should be replaced by '$' for easier formatting."},
                 {
                     "role": "user",
-                    "content": f"You responded with {default_ai()}, they are asking now '{input}'"
+                    "content": f"You responded with {default_ai()}, they are asking now {input}"
                 } 
             ]
         )
@@ -76,7 +45,7 @@ def followup_ai():
 
         with open("src/SHELLHACKS_2024_PROJECT/output.json", "r+") as file:
             data = json.load(file)
-            data["output"] = output
+            data['Response']['output'] = output
     return output
 
 followup_ai()
