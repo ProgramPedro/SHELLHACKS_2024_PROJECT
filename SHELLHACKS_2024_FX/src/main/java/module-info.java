@@ -1,4 +1,4 @@
-module com.example.shellhacks_2024_fx {
+module shellhacks_2024_fx {
     requires javafx.controls;
     requires javafx.fxml;
     requires jlatexmath;
